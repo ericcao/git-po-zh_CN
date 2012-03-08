@@ -119,6 +119,7 @@ verify_commit_encoding()
 	encoding=""
 	log=""
 
+  echo check commit $c
 	git cat-file commit $c |
 	{
 		while read line; do
@@ -129,11 +130,13 @@ verify_commit_encoding()
 				subject=$((subject + 1))
 				continue
 			fi
-			if [ $subject -eq 0 ] && [[ $line =~ "^encoding (.+)" ]]; then
+      pencoding="^encoding (.+)"
+			if [ $subject -eq 0 ] && [[ $line =~ $pencoding ]]; then
 				encoding="${BASH_REMATCH[1]}"
 			fi
 			# non-ascii found in commit log
-			if [[ $line =~ "([^[:alnum:][:space:][:punct:]]+)" ]]; then
+      pnoascii="([^[:alnum:][:space:][:punct:]]+)"
+			if [[ $line =~ $pnoascii ]]; then
 				non_ascii="$line << ${BASH_REMATCH[1]}"
 				if [ $subject -eq 1 ]; then
 					report_nonascii_in_subject $c $non_ascii
